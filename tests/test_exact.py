@@ -2,7 +2,21 @@ import unittest
 
 import numpy as np
 
-from main import Maze, N_ACTIONS, exact_objective_and_gradient, finite_difference_gradient
+from gi.exact import exact_objective_and_gradient
+from gi.mdp import Maze, N_ACTIONS
+
+
+def finite_difference_gradient(maze: Maze, theta: np.ndarray, epsilon: float = 1e-5) -> np.ndarray:
+    numerical_gradient = np.zeros_like(theta)
+    for index in np.ndindex(theta.shape):
+        plus = theta.copy()
+        minus = theta.copy()
+        plus[index] += epsilon
+        minus[index] -= epsilon
+        plus_objective, _ = exact_objective_and_gradient(maze, plus)
+        minus_objective, _ = exact_objective_and_gradient(maze, minus)
+        numerical_gradient[index] = (plus_objective - minus_objective) / (2.0 * epsilon)
+    return numerical_gradient
 
 
 class ExactGradientTests(unittest.TestCase):
