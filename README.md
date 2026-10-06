@@ -1,10 +1,6 @@
 # Policy Gradient Estimator Benchmark
 
-A reproducible study of how baseline choice affects the quality of policy-gradient estimates. It compares REINFORCE-, critic-, and group-based estimators against an analytically computed gradient in a small tabular maze.
-
-## Objective
-
-At a fixed policy, when does a state-value critic provide a better gradient estimate than a group-relative baseline as batch size and critic quality change?
+A study of how baseline choice affects the quality of policy-gradient estimates. It compares REINFORCE-, critic-, and group-based estimators against an analytically computed gradient in a small tabular maze.
 
 The benchmark is designed to answer:
 
@@ -14,11 +10,7 @@ The benchmark is designed to answer:
 4. How much does omitting the trajectory-time factor `gamma^t` change the discounted gradient?
 5. Does a cleaner gradient estimate lead to faster improvement in the exact objective?
 
-## Why this setup
-
-Policy-gradient estimators are normally judged indirectly: apply an update, run more episodes, and observe the resulting return. That makes it difficult to distinguish the quality of the update from the randomness of the environment and subsequent training.
-
-This project instead uses a small, structured slippery maze whose policy objective and exact gradient can be calculated with dynamic programming. The maze is not intended to represent a realistic control benchmark. Its purpose is to provide a simple environment in which sampled gradient estimates can be compared with a known reference. That makes it possible to measure bias, variance, directional error, and gradient magnitude directly before studying learning behaviour.
+This project uses a small, structured slippery maze whose policy objective and exact gradient can be calculated through dynamic programming. The maze is not intended to represent a realistic control benchmark - its purpose is to provide a simple environment in which sampled gradient estimates can be compared with a known reference. That makes it possible to measure bias, variance, directional error, and gradient magnitude directly.
 
 ## The idea
 
@@ -48,19 +40,6 @@ The choice of $S_{i,t}$ defines the estimator. It may be the complete episode re
 REINFORCE, critic-based PPO-style estimators, and GRPO-style group baselines differ primarily in how they construct the score $S_{i,t}$. This project compares those scoring rules directly against the analytic gradient, before asking the separate question of how their updates affect learning over time.
 
 Episodes are sampled as REINFORCE, PPO, or GRPO would be, and each Monte Carlo gradient estimate is compared with this analytic gradient rather than judged through a noisy final reward. This isolates the quality of the local update signal: bias measures systematic deviation from the target, variance measures sensitivity to the sampled batch, cosine similarity measures directional agreement, and gradient magnitude exposes scaling effects such as group-baseline self-inclusion.
-
-## Environment and reference
-
-The environment is a hand-built 3 x 4 tabular maze with four actions, a 20% downward slip probability, a +10 treasure, -5 pits, absorbing terminal states, and discount `gamma = 0.9`.
-
-The policy is a tabular softmax policy. Dynamic programming computes:
-
-- The exact objective `J(theta)`
-- The state values `V(s)`
-- The action values `Q(s, a)`
-- The exact discounted policy gradient
-
-The analytic gradient is checked against finite differences before any estimator comparison is trusted.
 
 ## Estimators
 
