@@ -1,15 +1,11 @@
 """The tabular slippery-maze environment."""
 
 from __future__ import annotations
-
 from dataclasses import dataclass
-
 import numpy as np
-
 
 N_ACTIONS = 4
 UP, DOWN, LEFT, RIGHT = range(N_ACTIONS)
-
 
 @dataclass(frozen=True)
 class Maze:
